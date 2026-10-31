@@ -1,0 +1,6 @@
+{
+  "name": "Velvet Roast — Cacao & Oat Cortado Companion",
+  "description": "Artisanal barista guide and interactive brew timer for brewing ultra-strong, low-bitterness morning coffee with dark roast beans, velvety oat milk, and rich cacao-nut notes.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

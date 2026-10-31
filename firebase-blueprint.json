@@ -1,0 +1,66 @@
+{
+  "entities": {
+    "UserRecipe": {
+      "title": "User Recipe",
+      "description": "A saved custom coffee formulation and tasting notes in the user's recipe journal",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the saved recipe",
+          "maxLength": 128
+        },
+        "userId": {
+          "type": "string",
+          "description": "UID of the owner",
+          "maxLength": 128
+        },
+        "name": {
+          "type": "string",
+          "description": "Display title of the custom brew formulation",
+          "maxLength": 100
+        },
+        "date": {
+          "type": "string",
+          "description": "Human readable date label",
+          "maxLength": 30
+        },
+        "equipment": {
+          "type": "string",
+          "enum": ["moka", "espresso", "pourover"],
+          "description": "Brewing apparatus used"
+        },
+        "servings": {
+          "type": "number",
+          "description": "Serving scale multiplier"
+        },
+        "pantry": {
+          "type": "object",
+          "description": "Pantry spices, nut intensity, cocoa level, and sweetener settings"
+        },
+        "cozyRating": {
+          "type": "number",
+          "description": "Rating from 1 to 5 stars"
+        },
+        "personalNotes": {
+          "type": "string",
+          "description": "Tasting notes and morning barista observations",
+          "maxLength": 500
+        },
+        "createdAt": {
+          "type": "string",
+          "description": "Timestamp ISO string when created"
+        }
+      },
+      "required": ["userId", "name", "equipment", "servings", "pantry", "cozyRating"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}/recipes/{recipeId}": {
+      "schema": {
+        "$ref": "#/entities/UserRecipe"
+      },
+      "description": "User private collection of favorite coffee recipes and brewing journal entries"
+    }
+  }
+}

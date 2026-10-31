@@ -1,0 +1,54 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Default deny all unknown paths
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Helper functions
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() > 0 && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    function isValidUserRecipe(data) {
+      return data.userId is string && data.userId == request.auth.uid &&
+             data.name is string && data.name.size() > 0 && data.name.size() <= 100 &&
+             data.equipment is string && (data.equipment == 'moka' || data.equipment == 'espresso' || data.equipment == 'pourover') &&
+             data.servings is number && data.servings >= 1 && data.servings <= 12 &&
+             data.cozyRating is number && data.cozyRating >= 1 && data.cozyRating <= 5 &&
+             data.pantry is map &&
+             (!('personalNotes' in data) || (data.personalNotes is string && data.personalNotes.size() <= 500));
+    }
+
+    // Test connection document
+    match /test/connection {
+      allow read: if true;
+    }
+
+    // User private recipe collection
+    match /users/{userId}/recipes/{recipeId} {
+      allow get, list: if isOwner(userId);
+      allow create: if isOwner(userId) && isValidId(recipeId) && isValidUserRecipe(incoming());
+      allow update: if isOwner(userId) && isValidId(recipeId) && isValidUserRecipe(incoming()) && incoming().userId == existing().userId;
+      allow delete: if isOwner(userId) && isValidId(recipeId);
+    }
+  }
+}
